@@ -50,16 +50,14 @@ void load_file(const char* filename)
 
     while(fscanf(byte_code, "%04x %04x", &adr, &num) == 2)
     {
-        Adress cpy_adr = adr;
-
         for (unsigned int i = 0; i < num; i++)
         {
-            fscanf(byte_code, "%02x", &b);
-            b_write(cpy_adr, b);
-            cpy_adr++;
+            fscanf(byte_code, "%02hhx ", &b);
+            b_write(adr, b);
+            adr++;
         }
 
-        mem_dump(cpy_adr - num, num);
+        mem_dump(adr - num, num);
 
         adr = 0;
         num = 0;

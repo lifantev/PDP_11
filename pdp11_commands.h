@@ -3,8 +3,6 @@
 #ifndef PDP11_COMMANDS_H_
 #define PDP11_COMMANDS_H_
 
-#include "pdp11.h"
-
 typedef struct
 {
     word mask;
@@ -16,9 +14,8 @@ typedef struct
 Command cmd[] = {
     {0170000, 0010000, "mov", do_move},
     {0170000, 0060000, "add", do_add},
-    {0111111, 0000000, "halt", do_halt},
-
-    {0000000, 0000000, "unknown command", do_nothing}
+    {0777777, 0000000, "halt", do_halt},
+    {0000000, 0000000, "unknown", do_nothing}
 };
 
 enum coms {

@@ -10,8 +10,8 @@
 
 #define MEMSIZE 64*1024
 
-typedef __uint8_t byte;
-typedef __uint16_t word;
+typedef unsigned char byte;
+typedef unsigned int word;
 typedef word Adress;
 
 word mem[MEMSIZE];
