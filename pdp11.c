@@ -82,3 +82,12 @@ void trace(const char* fmt, ...)
     vprintf(fmt, ap);
     va_end(ap);
 }
+
+void reg_dump()
+{
+    for(int i = 0; i < 8; i++)
+    {
+        trace("R%d:%o ", i, reg[i]);
+    }
+    puts("");
+}

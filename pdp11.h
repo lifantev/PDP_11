@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 #define MEMSIZE 64*1024
 
@@ -14,9 +15,21 @@ typedef unsigned char byte;
 typedef unsigned int word;
 typedef word Adress;
 
+
 word mem[MEMSIZE];
 word reg[8];
 #define pc reg[7]
+
+
+typedef struct
+{
+    word val;
+    word adr;
+    word place;
+} Arg;
+Arg SS, DD;
+
+enum PLACE {REG, MEM};
 
 
 void b_write(Adress, byte);
@@ -26,8 +39,9 @@ word w_read(Adress);
 void load_file(const char*);
 void mem_dump(Adress, unsigned int);
 void trace(const char*, ...);
+void reg_dump();
 
-
+Arg get_mr(word);
 void run();
 void do_move();
 void do_halt();
