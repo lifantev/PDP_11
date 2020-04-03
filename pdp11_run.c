@@ -46,7 +46,7 @@ Arg get_mr(word w)
             else
                 res.val = b_read(res.adr);
             
-            if (reg_num == 7)
+            if (reg_num == 6 || 7)
             {
                 reg[reg_num] += 2;
                 trace("#%d ", convert_value(res.val));
@@ -62,6 +62,50 @@ Arg get_mr(word w)
             }
             break;
         
+        case 3:
+            res.adr = reg[reg_num];
+            reg[reg_num] += 2;
+            res.adr = w_read(res.adr); // todo byte ????????????
+            res.val = w_read(res.adr);
+            res.place = REG;
+
+            if (reg_num == 6 || 7)
+                trace("@3%o ", res.adr);
+            else 
+                trace("@(R%o)+ ", reg_num);
+            break;
+        
+        case 4:
+            res.place = REG;
+
+            if (true)
+            {   
+                reg[reg_num] -= 2;
+                res.adr = reg[reg_num];
+                res.val = w_read(res.adr);
+            }
+            else
+            {
+                if (reg_num == 6 || 7)
+                    reg[reg_num] -= 2;
+                else
+                    reg[reg_num] -= 1;
+
+                res.adr = reg[reg_num];
+                res.val = b_read(res.adr);
+            }
+            trace("-(R%o) ", reg_num);
+            break;
+
+        case 5:
+            res.place = REG;
+            reg[reg_num] -= 2;
+            res.adr = reg[reg_num];
+            res.adr = w_read(res.adr); // todo byte ???????????
+            res.val = w_read(res.adr);
+            trace("@-(R%o) ", reg_num);
+            break;
+
         default:
             fprintf(stderr, "Mode %o not implemented.", mode);
             exit(EXIT_FAILURE);

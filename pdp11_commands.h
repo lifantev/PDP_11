@@ -24,8 +24,8 @@ typedef struct
 } Command;
 
 Command cmd[] = {
-    {0170000, 0010000, "mov", do_move, HAS_SS_DD},
-    {0170000, 0060000, "add", do_add, HAS_SS_DD},
+    {0170000, 0010000, "mov", do_move, HAS_SS | HAS_DD},
+    {0170000, 0060000, "add", do_add, HAS_SS | HAS_DD},
     {0777777, 0000000, "halt", do_halt, NO_PARAMS},
     {0000000, 0000000, "unknown", do_nothing, NO_PARAMS}
 };

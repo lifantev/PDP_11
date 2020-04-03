@@ -19,7 +19,7 @@ typedef word Adress;
 word mem[MEMSIZE];
 word reg[8];
 #define pc reg[7]
-
+#define sp reg[6]
 
 typedef struct
 {
