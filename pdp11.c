@@ -70,7 +70,7 @@ void mem_dump(Adress adr, unsigned int num)
 {
     for (unsigned int i = 0; i < num; i += 2)
     {
-        printf("%06o : %06o\n", adr, w_read(adr));
+        trace("%06o : %06o\n", adr, w_read(adr));
         adr += 2;
     }
 }
@@ -85,9 +85,14 @@ void trace(const char* fmt, ...)
 
 void reg_dump()
 {
-    for(int i = 0; i < 8; i++)
+    for(int i = 0; i < 4; i++)
     {
-        trace("R%d:%o ", i, reg[i]);
+        trace("r%d:%06o ", i, reg[i]);
     }
-    puts("");
+    trace("\n");
+    for(int i = 5; i < 8; i++)
+    {
+        trace("r%d:%06o ", i, reg[i]);
+    }
+    trace("\n");
 }

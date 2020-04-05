@@ -3,20 +3,24 @@
 #include "pdp11.h"
 
 // for debug 
-//#include "pdp11_commands.h"
-//#include "pdp11.c"
-//#include "pdp11_run.c"
-
+/* #include "pdp11_commands.h"
+#include "pdp11.c"
+#include "pdp11_run.c"
+ */
 void test();
 
 int main(int argc, char* argv[])
 {
     //if (argc > 1) 
-    load_file("../gitrepo/tests/01_sum/sum_neg.o");
+    //load_file("../gitrepo/tests/06_mode4/mode4.txt.o");
+    //load_file("../gitrepo/tests/01_sum/sum.o");
+    //load_file("../gitrepo/tests/01_sum/sum_neg.o");
+    //load_file("../gitrepo/tests/02_sob3/sumvar_word.txt.o");
+    load_file("../gitrepo/tests/03_sob_byte/sumvar_byte.txt.o");
 
     //test();
 
-    run();
+    run(pc, STAND_CALL);
 
     return 0;
 }

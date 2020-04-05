@@ -6,10 +6,24 @@
 int convert_value(word value)
 {
     if ((value >> 8) == 0xFF)
-        return -((~value + 1) & 0xFF);
+        return -((~value + 1) & 0xFFFF);
     else 
         return value; 
 } 
+
+word get_nn(word w)
+{
+    word res = w & 15;
+    trace("%06o ", pc - NN * 2);    
+    return res;
+}
+
+word get_r(word w)
+{
+    word res = ((w >> 6) & 7);
+    trace("R%o ", res);
+    return res;
+}
 
 Arg get_mr(word w)
 {
@@ -19,17 +33,17 @@ Arg get_mr(word w)
 
     switch (mode)
     {
-        case 0:     // R3
+        case 0:     // Rn
             res.adr = reg_num;
             res.val = reg[reg_num];
             res.place = REG;
             trace("R%o ", reg_num);
             break;
 
-        case 1:     // (R3)
+        case 1:     // (Rn)
             res.adr = reg[reg_num];
             res.place = REG;
-            if (true)   // todo byte !!!!!!!!!!!!!!
+            if (!BYTE)
                 res.val = w_read(res.adr);
             else 
                 res.val = b_read(res.adr);
@@ -37,23 +51,23 @@ Arg get_mr(word w)
             trace("(R%o) ", reg_num);
             break;
 
-        case 2:     // (R3)+ or #3
+        case 2:     // (Rn)+ or #n
             res.adr = reg[reg_num];
             res.place = REG;
 
-            if (true) // todo byte !!!!!!!!!!!!!!!!
+            if (!BYTE)
                 res.val = w_read(res.adr);
             else
                 res.val = b_read(res.adr);
             
-            if (reg_num == 6 || 7)
+            if (reg_num == 6 || reg_num == 7)
             {
                 reg[reg_num] += 2;
                 trace("#%d ", convert_value(res.val));
             }
             else
             {
-                if (true) // todo byte !!!!!!!!!!!!!!!!
+                if (!BYTE)
                     reg[reg_num] += 2;
                 else
                     reg[reg_num] += 1;
@@ -62,23 +76,28 @@ Arg get_mr(word w)
             }
             break;
         
-        case 3:
+        case 3:     // @(Rn)+ or @#n
             res.adr = reg[reg_num];
             reg[reg_num] += 2;
-            res.adr = w_read(res.adr); // todo byte ????????????
-            res.val = w_read(res.adr);
+            res.adr = w_read(res.adr);
+
+            if (!BYTE)
+                res.val = w_read(res.adr);
+            else
+                res.val = b_read(res.adr);
+                
             res.place = REG;
 
             if (reg_num == 6 || 7)
-                trace("@3%o ", res.adr);
+                trace("@#%o ", res.adr);
             else 
                 trace("@(R%o)+ ", reg_num);
             break;
         
-        case 4:
-            res.place = REG;
+        case 4:     // -(Rn)
+            res.place = MEM;
 
-            if (true)
+            if (!BYTE)
             {   
                 reg[reg_num] -= 2;
                 res.adr = reg[reg_num];
@@ -97,12 +116,17 @@ Arg get_mr(word w)
             trace("-(R%o) ", reg_num);
             break;
 
-        case 5:
+        case 5:     // @-(Rn)
             res.place = REG;
             reg[reg_num] -= 2;
             res.adr = reg[reg_num];
-            res.adr = w_read(res.adr); // todo byte ???????????
-            res.val = w_read(res.adr);
+            res.adr = w_read(res.adr);
+
+            if (!BYTE)
+                res.val = w_read(res.adr);
+            else
+                res.val = b_read(res.adr);
+
             trace("@-(R%o) ", reg_num);
             break;
 
@@ -116,19 +140,59 @@ Arg get_mr(word w)
 
 void do_halt()
 {
-    trace("THE END\n");
+    trace("\n----------halted----------\n");
     reg_dump();
     exit(EXIT_SUCCESS);
 }
 
 void do_move()
 {
-    DD.val = SS.val & 0xFF;
+    DD.val = SS.val & 0xFFFF;
 
+    if (!BYTE)
+    {
+        if (DD.place == REG)
+            reg[DD.adr] = DD.val;
+        else if (DD.place == MEM)
+            w_write(DD.adr, DD.val);
+    }
+    else
+    {
+        if (DD.place == REG)
+        {
+            if (((DD.val & 0xFF) >> 7) == 0) // significant expansion
+                DD.val &= 0x00FF;
+            else
+                DD.val = (DD.val & 0x00FF) | 0xFF00;
+
+            reg[DD.adr] = DD.val;
+        }
+        else if (DD.place == MEM)
+            b_write(DD.adr, DD.val);
+    }
+    
+}
+
+void do_sob()
+{
+    if (--reg[R] != 0)
+    {
+        pc = pc - NN * 2;
+        run(pc, SPEC_CALL);
+    }
+}
+
+void do_clear()
+{
     if (DD.place == REG)
-        reg[DD.adr] = DD.val;
+        reg[DD.adr] = 0;
     else if (DD.place == MEM)
-        w_write(DD.adr, DD.val);
+    {
+        if(!BYTE)
+            w_write(DD.adr, 0);
+        else 
+            b_write(DD.adr, 0);
+    }
 }
 
 void do_add()
@@ -143,9 +207,12 @@ void do_add()
 
 void do_nothing(){}
 
-void run()
+void run(word program_counter, bool CALL)
 {
-    pc = 01000;
+    if(CALL == STAND_CALL)
+        pc = 01000;
+    else
+        pc = program_counter;
     
     int itr = 0;
     while (cmd[itr].mask != cmd[HALT].mask)
@@ -157,18 +224,30 @@ void run()
         itr = 0;
         while ((w & cmd[itr].mask) != cmd[itr].opcode) 
             itr++;
+
+        if ((cmd[itr].opcode >> 15) == 1) // byte operation or not
+            BYTE = true;
+        else if ((cmd[itr].opcode >> 15) == 0)
+            BYTE = false;
         
         if (cmd[itr].params != NO_PARAMS)
         {
-            if ((cmd[itr].params & HAS_DD) == HAS_DD)
-                DD = get_mr(w);
+            if((cmd[itr].params & HAS_R) == HAS_R)
+                R = get_r(w);
+
+            if((cmd[itr].params & HAS_NN) == HAS_NN)
+                NN = get_nn(w);
 
             if((cmd[itr].params & HAS_SS) == HAS_SS)
                 SS = get_mr(w >> 6);
+
+            if ((cmd[itr].params & HAS_DD) == HAS_DD)
+                DD = get_mr(w);
+
         }
 
         trace(cmd[itr].name); 
-        printf("\n");
+        trace("\n");
         cmd[itr].do_func();
     }
 }

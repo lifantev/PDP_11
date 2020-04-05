@@ -29,8 +29,12 @@ typedef struct
 } Arg;
 Arg SS, DD;
 
+word NN, R;
+bool BYTE;
 enum PLACE {REG, MEM};
 
+#define SPEC_CALL true
+#define STAND_CALL false
 
 void b_write(Adress, byte);
 byte b_read(Adress);
@@ -42,9 +46,13 @@ void trace(const char*, ...);
 void reg_dump();
 
 Arg get_mr(word);
-void run();
+word get_nn(word);
+word get_r(word);
+void run(word, bool);
 void do_move();
 void do_halt();
+void do_clear();
+void do_sob();
 void do_add();
 void do_nothing();
 
