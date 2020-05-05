@@ -29,12 +29,10 @@ typedef struct
 } Arg;
 Arg SS, DD;
 
-word NN, R;
+word NN, R, XX;
 bool BYTE;
 enum PLACE {REG, MEM};
-
-#define SPEC_CALL true
-#define STAND_CALL false
+byte flag_N, flag_Z, flag_V, flag_C;
 
 void b_write(Adress, byte);
 byte b_read(Adress);
@@ -48,7 +46,20 @@ void reg_dump();
 Arg get_mr(word);
 word get_nn(word);
 word get_r(word);
-void run(word, bool);
+word get_xx(word);
+void run();
+void do_beq();
+void do_br();
+void do_tst();
+void do_cmp();
+void do_setn();
+void do_setz();
+void do_setv();
+void do_setc();
+void do_cln();
+void do_clz();
+void do_clv();
+void do_clc();
 void do_move();
 void do_halt();
 void do_clear();

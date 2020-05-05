@@ -1,7 +1,32 @@
 //pdp11_run.c
 
 #include "pdp11.h"
-#include "pdp11_commands.h"
+#include "pdp11_comdefs.h"
+
+Command cmd[] = {
+    {0170000, 0010000, "mov", do_move, HAS_SS | HAS_DD},
+    {0170000, 0110000, "movb", do_move, HAS_SS | HAS_DD},
+    {0170000, 0060000, "add", do_add, HAS_SS | HAS_DD},
+    {0177777, 0000000, "halt", do_halt, NO_PARAMS},
+    {0177000, 0105000, "clrb", do_clear, HAS_DD},
+    {0177000, 0005000, "clr", do_clear, HAS_DD},
+    {0177000, 0077000, "sob", do_sob, HAS_R | HAS_NN},
+    {0000277, 0000270, "sen", do_setn, NO_PARAMS},
+    {0000277, 0000264, "sez", do_setz, NO_PARAMS},
+    {0000277, 0000262, "sev", do_setv, NO_PARAMS},
+    {0000277, 0000261, "sec", do_setc, NO_PARAMS},
+    {0000277, 0000250, "cln", do_cln, NO_PARAMS},
+    {0000277, 0000244, "clz", do_clz, NO_PARAMS},
+    {0000277, 0000242, "clv", do_clv, NO_PARAMS},
+    {0000277, 0000241, "clc", do_clc, NO_PARAMS},
+    {0105700, 0005700, "tst", do_tst, HAS_DD},
+    {0105700, 0105700, "tstb", do_tst, HAS_DD},
+    {0120000, 0020000, "cmp", do_cmp, HAS_DD | HAS_SS},
+    {0120000, 0120000, "cmpb", do_cmp, HAS_DD | HAS_SS},
+    {0077400, 0000400, "br", do_br, HAS_XX},
+    {0077400, 0001400, "beq", do_beq, HAS_XX},
+    {0000000, 0000000, "unknown", do_nothing, NO_PARAMS}
+};
 
 int convert_value(word value)
 {
@@ -10,6 +35,12 @@ int convert_value(word value)
     else 
         return value; 
 } 
+
+word get_xx(word w)
+{
+    word res = w & 0xFF;
+    return res;
+}
 
 word get_nn(word w)
 {
@@ -63,7 +94,7 @@ Arg get_mr(word w)
             if (reg_num == 6 || reg_num == 7)
             {
                 reg[reg_num] += 2;
-                trace("#%d ", convert_value(res.val));
+                trace("#%o ", res.val);
             }
             else
             {
@@ -138,81 +169,9 @@ Arg get_mr(word w)
     return res;
 }
 
-void do_halt()
+void run()
 {
-    trace("\n----------halted----------\n");
-    reg_dump();
-    exit(EXIT_SUCCESS);
-}
-
-void do_move()
-{
-    DD.val = SS.val & 0xFFFF;
-
-    if (!BYTE)
-    {
-        if (DD.place == REG)
-            reg[DD.adr] = DD.val;
-        else if (DD.place == MEM)
-            w_write(DD.adr, DD.val);
-    }
-    else
-    {
-        if (DD.place == REG)
-        {
-            if (((DD.val & 0xFF) >> 7) == 0) // significant expansion
-                DD.val &= 0x00FF;
-            else
-                DD.val = (DD.val & 0x00FF) | 0xFF00;
-
-            reg[DD.adr] = DD.val;
-        }
-        else if (DD.place == MEM)
-            b_write(DD.adr, DD.val);
-    }
-    
-}
-
-void do_sob()
-{
-    if (--reg[R] != 0)
-    {
-        pc = pc - NN * 2;
-        run(pc, SPEC_CALL);
-    }
-}
-
-void do_clear()
-{
-    if (DD.place == REG)
-        reg[DD.adr] = 0;
-    else if (DD.place == MEM)
-    {
-        if(!BYTE)
-            w_write(DD.adr, 0);
-        else 
-            b_write(DD.adr, 0);
-    }
-}
-
-void do_add()
-{
-    DD.val = (SS.val + DD.val) & 0xFF;
-
-    if (DD.place == REG)
-        reg[DD.adr] = DD.val;
-    else if (DD.place == MEM)
-        w_write(DD.adr, DD.val);
-}
-
-void do_nothing(){}
-
-void run(word program_counter, bool CALL)
-{
-    if(CALL == STAND_CALL)
-        pc = 01000;
-    else
-        pc = program_counter;
+    pc = 01000;
     
     int itr = 0;
     while (cmd[itr].mask != cmd[HALT].mask)
@@ -243,6 +202,9 @@ void run(word program_counter, bool CALL)
 
             if ((cmd[itr].params & HAS_DD) == HAS_DD)
                 DD = get_mr(w);
+                
+            if ((cmd[itr].params & HAS_XX) == HAS_XX)
+                XX = get_xx(w);
 
         }
 

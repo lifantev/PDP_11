@@ -16,11 +16,12 @@ int main(int argc, char* argv[])
     //load_file("../gitrepo/tests/01_sum/sum.o");
     //load_file("../gitrepo/tests/01_sum/sum_neg.o");
     //load_file("../gitrepo/tests/02_sob3/sumvar_word.txt.o");
-    load_file("../gitrepo/tests/03_sob_byte/sumvar_byte.txt.o");
+    //load_file("../gitrepo/tests/03_sob_byte/sumvar_byte.txt.o");
+    load_file("../gitrepo/tests/05_arr0b/0arr.txt.o");
 
     //test();
 
-    run(pc, STAND_CALL);
+    run();
 
     return 0;
 }
