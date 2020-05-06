@@ -138,7 +138,7 @@ void do_move()
     // byte or word command
     {
     if (DD.adr == odata_adr)
-        printf("%c\n", DD.val);
+        printf("%c", DD.val);
 
     if (!BYTE)
     {

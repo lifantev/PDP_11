@@ -1,11 +1,11 @@
-// usage.c
+// pdp.c
 
 #include "pdp11.h"
 
 // for debug 
-/*  
+/* 
 #include "pdp11_comdefs.h"
-#include "pdp11.c"
+#include "pdp11_wr.c"
 #include "pdp11_run.c"
 #include "pdp11_coms.c" 
  */
@@ -13,7 +13,7 @@ bool TRACE;
 
 int main(int argc, char** argv)
 {
-  if (argc > 1)
+    if (argc > 1)
     {
         while (argc-- > 2)
         {
@@ -37,6 +37,7 @@ int main(int argc, char** argv)
     //load_file("../gitrepo/tests/02_sob3/sumvar_word.txt.o");
     //load_file("../gitrepo/tests/03_sob_byte/sumvar_byte.txt.o");
     //load_file("../gitrepo/tests/05_arr0b/0arr.txt.o");
+    //load_file("../gitrepo/tests/08_putstr/putstr.pdp.o");
 
     //test();
 
