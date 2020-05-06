@@ -1,4 +1,4 @@
-// pdp11.c
+// pdp11_wr.c
 
 #include "pdp11.h"
 
@@ -73,14 +73,6 @@ void mem_dump(Adress adr, unsigned int num)
         trace("%06o : %06o\n", adr, w_read(adr));
         adr += 2;
     }
-}
-
-void trace(const char* fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    vprintf(fmt, ap);
-    va_end(ap);
 }
 
 void reg_dump()

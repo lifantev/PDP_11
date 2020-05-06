@@ -8,8 +8,8 @@ Command cmd[] = {
     {0170000, 0110000, "movb", do_move, HAS_SS | HAS_DD},
     {0170000, 0060000, "add", do_add, HAS_SS | HAS_DD},
     {0177777, 0000000, "halt", do_halt, NO_PARAMS},
-    {0177000, 0105000, "clrb", do_clear, HAS_DD},
-    {0177000, 0005000, "clr", do_clear, HAS_DD},
+    {0177700, 0105000, "clrb", do_clear, HAS_DD},
+    {0177700, 0005000, "clr", do_clear, HAS_DD},
     {0177000, 0077000, "sob", do_sob, HAS_R | HAS_NN},
     {0000277, 0000270, "sen", do_setn, NO_PARAMS},
     {0000277, 0000264, "sez", do_setz, NO_PARAMS},
@@ -25,6 +25,7 @@ Command cmd[] = {
     {0120000, 0120000, "cmpb", do_cmp, HAS_DD | HAS_SS},
     {0077400, 0000400, "br", do_br, HAS_XX},
     {0077400, 0001400, "beq", do_beq, HAS_XX},
+    {0100000, 0100000, "bpl", do_bpl, HAS_XX},
     {0000000, 0000000, "unknown", do_nothing, NO_PARAMS}
 };
 
@@ -39,7 +40,11 @@ int convert_value(word value)
 word get_xx(word w)
 {
     word res = w & 0xFF;
-    return res;
+
+    if (res < 0200)
+        return res;
+    else
+        return res - 0400;
 }
 
 word get_nn(word w)
@@ -117,7 +122,7 @@ Arg get_mr(word w)
             else
                 res.val = b_read(res.adr);
                 
-            res.place = REG;
+            res.place = MEM;
 
             if (reg_num == 6 || 7)
                 trace("@#%o ", res.adr);
@@ -171,13 +176,16 @@ Arg get_mr(word w)
 
 void run()
 {
+    trace("\n----------running----------\n");
+
     pc = 01000;
+    w_write(ostat_adr, 0200); // constant display status
     
     int itr = 0;
     while (cmd[itr].mask != cmd[HALT].mask)
     {
         word w = w_read(pc);
-        trace("%06o %06o : ", pc, w);
+        trace("\n%06o %06o : ", pc, w);
         pc += 2;
         
         itr = 0;
@@ -209,7 +217,6 @@ void run()
         }
 
         trace(cmd[itr].name); 
-        trace("\n");
         cmd[itr].do_func();
     }
 }

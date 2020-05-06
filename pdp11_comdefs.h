@@ -45,6 +45,7 @@ enum COMS {
     CMPB,
     BR,
     BEQ,
+    BPL,
     //
 //    *new coms must be entered here*
     //

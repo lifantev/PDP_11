@@ -3,34 +3,44 @@
 #include "pdp11.h"
 #include "pdp11_comdefs.h"
 
+void do_bpl()
+{
+    if (flag_N == 0)
+        do_br();
+    else
+        trace(" end");
+}
+
 void do_beq()
 {
     if (flag_Z == 1)
         do_br();
+    else 
+        trace(" end");
 }
 
 void do_br()
 {
-    XX = XX - 0400;
     pc = pc + 2 * XX;
+    trace(" %06o\n", pc);
 }
 
 void do_tst()
 {
     if (!BYTE)
     {
-        if ((DD.val >> 3) == 1) do_setn();
+        if ((DD.val >> 15) == 1) do_setn();
         else do_cln();
         
-        if (((DD.val & 007) >> 3) == 1) do_setz();
+        if (DD.val == 0) do_setz();
         else do_clz();
     }
-    else // whats the difference between them... idk
+    else
     {
-        if ((DD.val >> 3) == 1) do_setn();
+        if (((DD.val & 0xFF) >> 7) == 1) do_setn();
         else do_cln();
         
-        if (((DD.val & 007) >> 3) == 1) do_setz();
+        if ((DD.val & 0xFF) == 0) do_setz();
         else do_clz();
     }
     
@@ -43,28 +53,28 @@ void do_cmp()
 
     if (!BYTE)
     {
-        cmp_val = (SS.val - DD.val) & 0xFFFF;
+        cmp_val = (SS.val - DD.val) & 0x1FFFF;
 
-        if ((cmp_val >> 14) == 1) do_setn();
+        if ((cmp_val >> 15) == 1) do_setn();
         else do_cln();
 
         if (cmp_val == 0) do_setz();
         else do_clz();
 
-        if ((cmp_val >> 15) == 1) do_setc();
+        if ((cmp_val >> 16) == 1) do_setc();
         else do_clc();
     }
-    else // whats the difference between them... idk
+    else
     {
-        cmp_val = (SS.val - DD.val) & 0xFFFF;
+        cmp_val = (SS.val - DD.val) & 0x1FF;
 
-        if ((cmp_val >> 14) == 1) do_setn();
+        if ((cmp_val >> 7) == 1) do_setn();
         else do_cln();
 
         if (cmp_val == 0) do_setz();
         else do_clz();
 
-        if ((cmp_val >> 15) == 1) do_setc();
+        if ((cmp_val >> 8) == 1) do_setc();
         else do_clc();
     }
     
@@ -116,7 +126,7 @@ void do_move()
 
     // NZVC
     {
-    if ((DD.val >> 14) == 1) do_setn();
+    if ((DD.val >> 15) == 1) do_setn();
     else do_cln();
 
     if (DD.val == 0) do_setz();
@@ -127,6 +137,9 @@ void do_move()
 
     // byte or word command
     {
+    if (DD.adr == odata_adr)
+        printf("%c\n", DD.val);
+
     if (!BYTE)
     {
         if (DD.place == REG)
@@ -180,20 +193,21 @@ void do_clear()
 
 void do_add()
 {
-    DD.val = (SS.val + DD.val) & 0xFFFF;
+    DD.val = (SS.val + DD.val);
 
     // NZVC
     {
-    if ((DD.val >> 14) == 1) do_setn();
+    if ((DD.val >> 15) == 1) do_setn();
     else do_cln();
 
     if (DD.val == 0) do_setz();
     else do_clz();
 
-    if ((DD.val >> 15) == 1) do_setc();
+    if ((DD.val >> 16) == 1) do_setc();
     else do_clc();
     }
 
+    DD.val &= 0xFFFF; 
     // byte or word command
     {
     if (DD.place == REG)

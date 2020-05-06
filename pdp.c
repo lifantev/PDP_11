@@ -3,27 +3,57 @@
 #include "pdp11.h"
 
 // for debug 
-/* #include "pdp11_commands.h"
+/*  
+#include "pdp11_comdefs.h"
 #include "pdp11.c"
 #include "pdp11_run.c"
+#include "pdp11_coms.c" 
  */
-void test();
+bool TRACE;
 
-int main(int argc, char* argv[])
+int main(int argc, char** argv)
 {
-    //if (argc > 1) 
+  if (argc > 1)
+    {
+        while (argc-- > 2)
+        {
+            switch (argv[argc][1])
+            {
+                case 't':
+                    TRACE = true;
+                break;
+
+                default:
+                break;
+            }
+        }
+
+        load_file(argv[1]);
+    }
+    
     //load_file("../gitrepo/tests/06_mode4/mode4.txt.o");
     //load_file("../gitrepo/tests/01_sum/sum.o");
     //load_file("../gitrepo/tests/01_sum/sum_neg.o");
     //load_file("../gitrepo/tests/02_sob3/sumvar_word.txt.o");
     //load_file("../gitrepo/tests/03_sob_byte/sumvar_byte.txt.o");
-    load_file("../gitrepo/tests/05_arr0b/0arr.txt.o");
+    //load_file("../gitrepo/tests/05_arr0b/0arr.txt.o");
 
     //test();
 
     run();
 
     return 0;
+}
+
+void trace(const char* fmt, ...)
+{
+    if (TRACE == true)
+    {
+        va_list ap;
+        va_start(ap, fmt);
+        vprintf(fmt, ap);
+        va_end(ap);
+    }
 }
 
 void test()
