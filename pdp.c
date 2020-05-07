@@ -4,10 +4,11 @@
 
 // for debug 
 /* 
-#include "pdp11_comdefs.h"
+ #include "pdp11_comdefs.h"
 #include "pdp11_wr.c"
 #include "pdp11_run.c"
-#include "pdp11_coms.c" 
+#include "pdp11_coms.c"
+#include "prog_stack.c"  
  */
 bool TRACE;
 
@@ -38,10 +39,13 @@ int main(int argc, char** argv)
     //load_file("../gitrepo/tests/03_sob_byte/sumvar_byte.txt.o");
     //load_file("../gitrepo/tests/05_arr0b/0arr.txt.o");
     //load_file("../gitrepo/tests/08_putstr/putstr.pdp.o");
+    //load_file("../gitrepo/tests/09_jsrrts/hello.pdp.o");
 
     //test();
 
+    stack_create(&PS);
     run();
+    stack_delete(&PS);
 
     return 0;
 }

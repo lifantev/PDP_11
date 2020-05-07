@@ -38,6 +38,9 @@ bool BYTE;
 enum PLACE {REG, MEM};
 byte flag_N, flag_Z, flag_V, flag_C;
 
+
+
+// pdp working
 void b_write(Adress, byte);
 byte b_read(Adress);
 void w_write(Adress, word);
@@ -48,11 +51,33 @@ void trace(const char*, ...);
 void test();
 void reg_dump();
 
+// programm stack
+#define SIZE 16
+typedef word elem_t; 
+
+struct Stack {
+    bool zombie;
+    size_t size;
+    int cnt; 
+    elem_t *Data;
+};
+
+struct Stack PS;
+
+void stack_create(struct Stack*);
+void stack_delete(struct Stack*);
+void stack_push(struct Stack*, elem_t);
+elem_t stack_pop(struct Stack*);
+
+// pdp run funcs
 Arg get_mr(word);
 word get_nn(word);
-word get_r(word);
+word get_rl(word);
+word get_rr(word);
 word get_xx(word);
 void run();
+void do_rts();
+void do_jsr();
 void do_bpl();
 void do_beq();
 void do_br();

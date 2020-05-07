@@ -10,7 +10,7 @@ Command cmd[] = {
     {0177777, 0000000, "halt", do_halt, NO_PARAMS},
     {0177700, 0105000, "clrb", do_clear, HAS_DD},
     {0177700, 0005000, "clr", do_clear, HAS_DD},
-    {0177000, 0077000, "sob", do_sob, HAS_R | HAS_NN},
+    {0177000, 0077000, "sob", do_sob, HAS_RL | HAS_NN},
     {0000777, 0000270, "setn", do_setn, NO_PARAMS},
     {0000777, 0000264, "setz", do_setz, NO_PARAMS},
     {0000777, 0000262, "setv", do_setv, NO_PARAMS},
@@ -26,6 +26,8 @@ Command cmd[] = {
     {0077400, 0000400, "br", do_br, HAS_XX},
     {0077400, 0001400, "beq", do_beq, HAS_XX},
     {0100000, 0100000, "bpl", do_bpl, HAS_XX},
+    {0177000, 0004000, "jsr", do_jsr, HAS_RL | HAS_DD},
+    {0177770, 0000200, "rts", do_rts, HAS_RR},
     {0000000, 0000000, "unknown", do_nothing, NO_PARAMS}
 };
 
@@ -54,10 +56,15 @@ word get_nn(word w)
     return res;
 }
 
-word get_r(word w)
+word get_rl(word w)
 {
     word res = ((w >> 6) & 7);
-    trace("R%o ", res);
+    return res;
+}
+
+word get_rr(word w)
+{
+    word res = (w & 7);
     return res;
 }
 
@@ -99,7 +106,7 @@ Arg get_mr(word w)
             if (reg_num == 6 || reg_num == 7)
             {
                 reg[reg_num] += 2;
-                trace("#%o ", res.val);
+                trace("#%06o ", res.val);
             }
             else
             {
@@ -125,7 +132,7 @@ Arg get_mr(word w)
             res.place = MEM;
 
             if (reg_num == 6 || 7)
-                trace("@#%o ", res.adr);
+                trace("@#%06o ", res.adr);
             else 
                 trace("@(R%o)+ ", reg_num);
             break;
@@ -166,6 +173,24 @@ Arg get_mr(word w)
             trace("@-(R%o) ", reg_num);
             break;
 
+        case 6:     // x(Rn) or xx
+            res.place = REG;
+
+            word displacement = w_read(pc);
+            pc += 2;
+            res.adr = displacement + reg[reg_num];
+
+            if (!BYTE)
+                res.val = w_read(res.adr);
+            else
+                res.val = b_read(res.adr);
+
+            if (reg_num == 7)
+                trace("%06o ", displacement);
+            else 
+                trace("%o(R%o) ", displacement, reg_num);
+            break;
+
         default:
             fprintf(stderr, "Mode %o not implemented.", mode);
             exit(EXIT_FAILURE);
@@ -199,8 +224,11 @@ void run()
         
         if (cmd[itr].params != NO_PARAMS)
         {
-            if((cmd[itr].params & HAS_R) == HAS_R)
-                R = get_r(w);
+            if((cmd[itr].params & HAS_RL) == HAS_RL)
+                R = get_rl(w);
+
+            if((cmd[itr].params & HAS_RR) == HAS_RR)
+                R = get_rr(w);
 
             if((cmd[itr].params & HAS_NN) == HAS_NN)
                 NN = get_nn(w);

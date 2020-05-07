@@ -3,6 +3,22 @@
 #include "pdp11.h"
 #include "pdp11_comdefs.h"
 
+void do_rts()
+{
+    pc = reg[R];
+    sp = stack_pop(&PS);
+    reg[R] = sp;
+    trace(" %06o", reg[R]);
+}
+
+void do_jsr()
+{
+    sp = reg[R];
+    stack_push(&PS, sp);
+    reg[R] = pc;
+    pc = DD.adr;
+}
+
 void do_bpl()
 {
     if (flag_N == 0)

@@ -8,7 +8,8 @@ enum PARAMS_MASK {
     HAS_DD = 1, 
     HAS_SS = 2, 
     HAS_NN = 4,
-    HAS_R = 8,
+    HAS_RL = 8,
+    HAS_RR = 1,
     HAS_XX = 16,
 };
 
@@ -46,6 +47,8 @@ enum COMS {
     BR,
     BEQ,
     BPL,
+    JSR,
+    RTS,
     //
 //    *new coms must be entered here*
     //
