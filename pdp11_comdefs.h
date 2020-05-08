@@ -49,6 +49,9 @@ enum COMS {
     BPL,
     JSR,
     RTS,
+    DECB,
+    DEC,
+    MUL,
     //
 //    *new coms must be entered here*
     //

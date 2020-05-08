@@ -76,6 +76,8 @@ word get_rl(word);
 word get_rr(word);
 word get_xx(word);
 void run();
+void do_mul();
+void do_dec();
 void do_rts();
 void do_jsr();
 void do_bpl();

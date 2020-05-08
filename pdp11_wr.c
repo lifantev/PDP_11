@@ -82,7 +82,7 @@ void reg_dump()
         trace("r%d:%06o ", i, reg[i]);
     }
     trace("\n");
-    for(int i = 5; i < 8; i++)
+    for(int i = 4; i < 8; i++)
     {
         trace("r%d:%06o ", i, reg[i]);
     }
