@@ -40,7 +40,7 @@ byte flag_N, flag_Z, flag_V, flag_C;
 
 
 
-// pdp working
+// pdp working funcs
 void b_write(Adress, byte);
 byte b_read(Adress);
 void w_write(Adress, word);
@@ -48,8 +48,10 @@ word w_read(Adress);
 void load_file(const char*);
 void mem_dump(Adress, unsigned int);
 void trace(const char*, ...);
+void big_trace();
 void test();
 void reg_dump();
+int pdp_ok();
 
 // programm stack
 #define SIZE 16

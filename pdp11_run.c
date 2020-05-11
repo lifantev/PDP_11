@@ -244,7 +244,7 @@ void run()
     w_write(ostat_adr, 0200); // constant display status
 
     int itr = 0;
-    while (cmd[itr].mask != cmd[HALT].mask)
+    while (cmd[itr].mask != cmd[HALT].mask && pdp_ok())
     {
         word w = w_read(pc);
         trace("\n%06o %06o : ", pc, w);
@@ -281,7 +281,8 @@ void run()
         }
 
         trace(cmd[itr].name);
-        cmd[itr].do_func();
+        cmd[itr].do_func();   
+        big_trace();
     }
 
     stack_delete(&PS);

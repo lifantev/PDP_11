@@ -3,6 +3,7 @@
 #ifndef PDP11_COMDEFS_H_
 #define PDP11_COMDEFS_H_
 
+// masks with command properties
 enum PARAMS_MASK {
     NO_PARAMS = 0, 
     HAS_DD = 1, 
@@ -24,6 +25,9 @@ typedef struct
 
 extern Command cmd[];
 
+/* commands that we have in our pdp
+new commands should be added 
+in the inicated place(in the same order as they are in the cmd[]) */
 enum COMS {
     MOV,
     MOVB,

@@ -2,15 +2,8 @@
 
 #include "pdp11.h"
 
-// for debug
-/* 
-#include "pdp11_comdefs.h"
-#include "pdp11_wr.c"
-#include "pdp11_run.c"
-#include "pdp11_coms.c"
-#include "prog_stack.c"  
- */
-bool TRACE;
+bool TRACE; // -t
+bool BIGTRACE; // -T
 
 int main(int argc, char **argv)
 {
@@ -24,6 +17,11 @@ int main(int argc, char **argv)
                 TRACE = true;
                 break;
 
+            case 'T':
+                TRACE = true;
+                BIGTRACE = true;
+                break;
+
             default:
                 break;
             }
@@ -32,26 +30,28 @@ int main(int argc, char **argv)
         load_file(argv[1]);
     }
 
-    {
-        //load_file("../gitrepo/tests/06_mode4/mode4.txt.o");
-        //load_file("../gitrepo/tests/01_sum/sum.o");
-        //load_file("../gitrepo/tests/01_sum/sum_neg.o");
-        //load_file("../gitrepo/tests/02_sob3/sumvar_word.txt.o");
-        //load_file("../gitrepo/tests/03_sob_byte/sumvar_byte.txt.o");
-        //load_file("../gitrepo/tests/05_arr0b/0arr.txt.o");
-        //load_file("../gitrepo/tests/08_putstr/putstr.pdp.o");
-        //load_file("../gitrepo/tests/09_jsrrts/hello.pdp.o");
-        //load_file("../gitrepo/tests/09_jsrrts/mode6.pdp.o");
-        //load_file("../gitrepo/tests/09_jsrrts/mode6_neg.pdp.o");
-        //load_file("../gitrepo/tests/09_jsrrts/mode67.pdp.o");
-    }
-    //test();
-
     run();
 
     return 0;
 }
 
+// checks segmentation fault
+int pdp_ok()
+{
+    if (pc > 0 && pc <= MEMSIZE)
+        return 1;
+    else
+    {
+        stack_delete(&PS);
+        TRACE = true;
+        trace("\n----------segmentation error----------\n");
+        do_halt();
+        return 0;
+    }
+}
+
+// prints name of the func, adress of programm counter, function`s opcode 
+// and some other things
 void trace(const char *fmt, ...)
 {
     if (TRACE == true)
@@ -63,6 +63,14 @@ void trace(const char *fmt, ...)
     }
 }
 
+// dumps registers after doing all operations
+void big_trace()
+{
+    if (BIGTRACE == true)
+        reg_dump();
+}
+
+// testing pdp working funcs
 void test()
 {
     // test1 -------------------
