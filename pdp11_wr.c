@@ -44,6 +44,12 @@ void load_file(const char* filename)
     FILE* byte_code;
     byte_code = fopen(filename, "rb");
 
+    if (byte_code == NULL)
+    {
+        puts("Core file not found.");
+        exit(EXIT_FAILURE);
+    }
+
     Adress adr = 0;
     unsigned int num = 0;
     byte b = 0;

@@ -7,6 +7,12 @@ bool BIGTRACE; // -T
 
 int main(int argc, char **argv)
 {
+    if (argc == 1)
+    {
+        help();
+        return 0;
+    }    
+    
     if (argc > 1)
     {
         while (argc-- > 2)
@@ -33,6 +39,16 @@ int main(int argc, char **argv)
     run();
 
     return 0;
+}
+
+
+// describes work of pdp
+void help()
+{
+    puts("Usage: ./pdp initial-core-file [options]\n\n"
+    "Options:\n\t"
+    "-t	show trace to stdout\n\t"
+	"-T	show verbose trace to stdout\n");
 }
 
 // checks segmentation fault

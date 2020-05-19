@@ -222,7 +222,7 @@ void do_halt()
 void do_move()
 {
     DD.val = SS.val & 0xFFFF;
-
+    
     // NZVC
     {
         if ((DD.val >> 15) == 1)

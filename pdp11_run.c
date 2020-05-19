@@ -89,7 +89,7 @@ Arg get_mr(word w)
     case 1: // (Rn)
     {
         res.adr = reg[reg_num];
-        res.place = REG;
+        res.place = MEM;
         if (!BYTE)
             res.val = w_read(res.adr);
         else

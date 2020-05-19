@@ -52,6 +52,7 @@ void big_trace();
 void test();
 void reg_dump();
 int pdp_ok();
+void help();
 
 // programm stack
 #define SIZE 16
