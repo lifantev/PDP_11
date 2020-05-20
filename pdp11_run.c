@@ -3,6 +3,11 @@
 #include "pdp11.h"
 #include "pdp11_comdefs.h"
 
+word mem[MEMSIZE];
+word reg[8];
+#define pc reg[7]
+#define sp reg[6]
+
 Command cmd[] = {
     {0170000, 0010000, "mov", do_move, HAS_SS | HAS_DD},
     {0170000, 0110000, "movb", do_move, HAS_SS | HAS_DD},
@@ -236,8 +241,6 @@ Arg get_mr(word w)
 
 void run()
 {
-    stack_create(&PS);
-
     trace("\n----------running----------\n");
 
     pc = 01000;
@@ -284,6 +287,4 @@ void run()
         cmd[itr].do_func();   
         big_trace();
     }
-
-    stack_delete(&PS);
 }

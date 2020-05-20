@@ -2,15 +2,12 @@ CC=gcc
 
 CFLAGS=-c -Wall -Wextra
 
-all: prog_stack.o compile link clean
+all: compile link clean
 
 compile: pdp11_wr.o pdp11_coms.o pdp11_run.o pdp.o
 
 link:
-	$(CC) pdp11_wr.o prog_stack.o pdp11_coms.o pdp11_run.o pdp.o -o pdp
-
-prog_stack.o: prog_stack.c
-	$(CC) $(CFLAGS) prog_stack.c
+	$(CC) pdp11_wr.o pdp11_coms.o pdp11_run.o pdp.o -o pdp
 
 pdp11_wr.o: pdp11_wr.c
 	$(CC) $(CFLAGS) pdp11_wr.c

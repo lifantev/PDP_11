@@ -18,10 +18,10 @@ typedef word Adress;
 
 
 word mem[MEMSIZE];
+word reg[8];
 #define ostat_adr 0177564
 #define odata_adr 0177566
 
-word reg[8];
 #define pc reg[7]
 #define sp reg[6]
 
@@ -53,24 +53,6 @@ void test();
 void reg_dump();
 int pdp_ok();
 void help();
-
-// programm stack
-#define SIZE 16
-typedef word elem_t; 
-
-struct Stack {
-    bool zombie;
-    size_t size;
-    int cnt; 
-    elem_t *Data;
-};
-
-struct Stack PS;
-
-void stack_create(struct Stack*);
-void stack_delete(struct Stack*);
-void stack_push(struct Stack*, elem_t);
-elem_t stack_pop(struct Stack*);
 
 // pdp run funcs
 Arg get_mr(word);

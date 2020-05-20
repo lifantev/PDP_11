@@ -10,7 +10,7 @@ enum PARAMS_MASK {
     HAS_SS = 2, 
     HAS_NN = 4,
     HAS_RL = 8,
-    HAS_RR = 1,
+    HAS_RR = 32,
     HAS_XX = 16,
 };
 

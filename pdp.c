@@ -2,6 +2,14 @@
 
 #include "pdp11.h"
 
+// for debug
+/* 
+#include "pdp11_comdefs.h"
+#include "pdp11_wr.c"
+#include "pdp11_run.c"
+#include "pdp11_coms.c"  
+*/
+
 bool TRACE; // -t
 bool BIGTRACE; // -T
 
@@ -41,14 +49,13 @@ int main(int argc, char **argv)
     return 0;
 }
 
-
 // describes work of pdp
 void help()
 {
-    puts("Usage: ./pdp initial-core-file [options]\n\n"
+    fputs("Usage: ./pdp initial-core-file [options]\n\n"
     "Options:\n\t"
     "-t	show trace to stdout\n\t"
-	"-T	show verbose trace to stdout\n");
+	"-T	show verbose trace to stdout\n", stderr);
 }
 
 // checks segmentation fault
@@ -58,7 +65,6 @@ int pdp_ok()
         return 1;
     else
     {
-        stack_delete(&PS);
         TRACE = true;
         trace("\n----------segmentation error----------\n");
         do_halt();
@@ -74,7 +80,7 @@ void trace(const char *fmt, ...)
     {
         va_list ap;
         va_start(ap, fmt);
-        vprintf(fmt, ap);
+        vfprintf(stderr,fmt, ap);
         va_end(ap);
     }
 }
@@ -83,7 +89,10 @@ void trace(const char *fmt, ...)
 void big_trace()
 {
     if (BIGTRACE == true)
+    {
+        fputs("\n", stderr);
         reg_dump();
+    }
 }
 
 // testing pdp working funcs

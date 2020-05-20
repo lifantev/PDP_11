@@ -42,11 +42,11 @@ void b_write(Adress adr, byte b)
 void load_file(const char* filename)
 {
     FILE* byte_code;
-    byte_code = fopen(filename, "rb");
+    byte_code = fopen(filename, "r");
 
     if (byte_code == NULL)
     {
-        puts("Core file not found.");
+        fputs("Core file not found.", stderr);
         exit(EXIT_FAILURE);
     }
 

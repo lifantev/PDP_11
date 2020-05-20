@@ -69,15 +69,15 @@ void do_dec()
 void do_rts()
 {
     pc = reg[R];
-    sp = stack_pop(&PS);
-    reg[R] = sp;
+    reg[R] = w_read(sp);
+    sp += 2;
     trace(" %06o", reg[R]);
 }
 
 void do_jsr()
-{
-    sp = reg[R];
-    stack_push(&PS, sp);
+{   
+    sp -= 2; 
+    w_write(sp, reg[R]);
     reg[R] = pc;
     pc = DD.adr;
 }
